@@ -1,10 +1,9 @@
+import '../model/Anotacao.dart';
 import 'package:sqflite/sqflite.dart';
-// ignore: depend_on_referenced_packages
 import 'package:path/path.dart';
 
-import '../model/Anotacao.dart';
-
 class AnotacaoHelper {
+  static const String nomeTabela = "anotacao";
   static final AnotacaoHelper _anotacaoHelper = AnotacaoHelper._internal();
   late Database _db;
 
@@ -12,10 +11,9 @@ class AnotacaoHelper {
     return _anotacaoHelper;
   }
 
-  AnotacaoHelper._internal();
+  AnotacaoHelper._internal() {}
 
   get db async {
-    // ignore: unnecessary_null_comparison
     if (_db != null) {
       return _db;
     } else {
@@ -32,10 +30,10 @@ class AnotacaoHelper {
 
     * */
 
-    String sql = "CREATE TABLE anotacao ("
-        "id INTEGER PRIMARY KEY AUTOINCREMENT,"
-        "titulo VARCHAR,"
-        "descricao TEXT,"
+    String sql = "CREATE TABLE $nomeTabela ("
+        "id INTEGER PRIMARY KEY AUTOINCREMENT, "
+        "titulo VARCHAR, "
+        "descricao TEXT, "
         "data DATETIME)";
     await db.execute(sql);
   }
@@ -44,36 +42,60 @@ class AnotacaoHelper {
     final caminhoBancoDados = await getDatabasesPath();
     final localBancoDados =
         join(caminhoBancoDados, "banco_minhas_anotacoes.db");
+
     var db =
         await openDatabase(localBancoDados, version: 1, onCreate: _onCreate);
     return db;
   }
 
-  salvarAnotacao(Anotacao anotacao) {}
+  Future<int> salvarAnotacao(Anotacao anotacao) async {
+    var bancoDados = await db;
+    int resultado = await bancoDados.insert(nomeTabela, anotacao.toMap());
+    return resultado;
+  }
+
+  recuperarAnotacoes() async {
+    var bancoDados = await db;
+    String sql = "SELECT * FROM $nomeTabela ORDER BY data DESC ";
+    List anotacoes = await bancoDados.rawQuery(sql);
+    return anotacoes;
+  }
 }
 
 /*
 
 class Normal {
+
   Normal(){
+
   }
+
 }
 
 class Singleton {
+
   static final Singleton _singleton = Singleton._internal();
+
   	factory Singleton(){
       print("Singleton");
       return _singleton;
     }
+
     Singleton._internal(){
     	print("_internal");
   	}
+
 }
 
 void main() {
+
   var i1 = Singleton();
   print("***");
   var i2 = Singleton();
+
   print( i1 == i2 );
+
 }
+
+
 * */

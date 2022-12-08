@@ -1,4 +1,3 @@
-// ignore_for_file: public_member_api_docs, sort_constructors_first
 class Anotacao {
   int? id;
   String titulo;
@@ -10,4 +9,17 @@ class Anotacao {
     this.descricao,
     this.data,
   );
+
+  Map toMap() {
+    Map<String, dynamic> map = {
+      "titulo": titulo,
+      "descricao": descricao,
+      "data": data
+    };
+
+    if (id != null) {
+      map["id"] = id;
+    }
+    return map;
+  }
 }
